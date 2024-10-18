@@ -1,9 +1,12 @@
-name: Update Dataset
+name: Update Datasets
 
 on:
   push:
     branches:
       - main
+
+permissions:
+  contents: write
 
 jobs:
   update-dataset:
@@ -11,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -28,16 +31,10 @@ jobs:
           chmod +x scripts/update-dataset.sh
           ./scripts/update-dataset.sh
 
-      - name: Check for changes
-        id: check_changes
+      - name: Commit report
         run: |
-          git config --local user.email "github-actions@example.com"
-          git config --local user.name "GitHub Actions"
-          git diff --exit-code --quiet || echo "::set-output name=changed::true"
-
-      - name: Commit changes
-        if: steps.check_changes.outputs.changed == 'true'
-        run: |
-          git add .
-          git commit -m "Update dataset on push"
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git add datasets/
+          git commit -m "auto: update dataset on push"
           git push
