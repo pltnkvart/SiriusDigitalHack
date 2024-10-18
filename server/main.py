@@ -2,7 +2,7 @@ from flask import Flask
 import atexit
 import os
 
-from server.api import upload, download, greeting, change_value, clusters
+from server.api import upload, download, health, change_value, clusters
 
 app = Flask(__name__)
 app.json.sort_keys = False
@@ -24,7 +24,7 @@ atexit.register(cleanup)
 
 app.register_blueprint(upload.bp)
 app.register_blueprint(download.bp)
-app.register_blueprint(greeting.bp)
+app.register_blueprint(health.bp)
 app.register_blueprint(change_value.bp)
 app.register_blueprint(clusters.bp)
 
