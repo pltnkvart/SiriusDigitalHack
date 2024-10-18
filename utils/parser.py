@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 import json
 import sys
 
@@ -20,6 +21,12 @@ class HRExitSurvey:
         self.comment_on_change = comment_on_change
 
 
+def sanitize_value(value):
+    if pd.isna(value) or (isinstance(value, str) and re.match(r'^(.)\1*$', value.strip())):
+        return None
+    return value.strip()
+
+
 def convert_xlsx_to_json(input_xlsx_file: str, employee_json_file: str, hr_json_file: str):
     xls = pd.ExcelFile(input_xlsx_file)
 
@@ -29,21 +36,21 @@ def convert_xlsx_to_json(input_xlsx_file: str, employee_json_file: str, hr_json_
     employee_exit_surveys = []
     for _, row in employee_responses.iterrows():
         employee_exit = EmployeeExitSurvey(
-            reasons_leave=row['Комментарий к вопросу  1. Какие причины (факторы) сформировали ваше решение уйти из компании (выберите не более 3-х).'],
-            additional_reasons=row['Комментарий к вопросу 1.1 Есть ли еще дополнительные причины, которые повлияли на ваше решение уйти из компании (выберите не более 3-х ).'],
-            stay_option=row['Комментарий к вопросу 2 Рассматриваете ли вы возможность остаться в компании/перевестись внутри отрасли?'],
-            return_option=row['Комментарий к вопросу 3 Рассматриваете ли вы возможность возвращения в компанию?'],
-            recommend_company=row['Комментарий к вопросу 4 Готовы ли вы рекомендовать компанию как работодателя?']
+            reasons_leave=sanitize_value(row['Комментарий к вопросу  1. Какие причины (факторы) сформировали ваше решение уйти из компании (выберите не более 3-х).']),
+            additional_reasons=sanitize_value(row['Комментарий к вопросу 1.1 Есть ли еще дополнительные причины, которые повлияли на ваше решение уйти из компании (выберите не более 3-х ).']),
+            stay_option=sanitize_value(row['Комментарий к вопросу 2 Рассматриваете ли вы возможность остаться в компании/перевестись внутри отрасли?']),
+            return_option=sanitize_value(row['Комментарий к вопросу 3 Рассматриваете ли вы возможность возвращения в компанию?']),
+            recommend_company=sanitize_value(row['Комментарий к вопросу 4 Готовы ли вы рекомендовать компанию как работодателя?'])
         )
         employee_exit_surveys.append(employee_exit.__dict__)
 
     hr_exit_surveys = []
     for _, row in hr_responses.iterrows():
         hr_exit = HRExitSurvey(
-            stay_option=row['Комментарий к вопросу 2 Рассматриваете ли вы возможность остаться в компании/перевестись внутри отрасли? Были ли попытки руководителя сохранить вас в компании?'],
-            return_option=row['Комментарий к вопросу 3 Рассматриваете ли вы возможность возвращения в компанию, если нет, то почему?'],
-            recommend_company=row['Комментарий к вопросу 4 Готовы ли вы рекомендовать компанию как работодателя, если нет, то почему?'],
-            comment_on_change=row['Комментарий к ответу о причине увольнения "Желание сменить направление деятельности". Если сотрудник выбирает причину "Желание сменить направление деятельности, ему нужно прокомментировать эту причину.']
+            stay_option=sanitize_value(row['Комментарий к вопросу 2 Рассматриваете ли вы возможность остаться в компании/перевестись внутри отрасли? Были ли попытки руководителя сохранить вас в компании?']),
+            return_option=sanitize_value(row['Комментарий к вопросу 3 Рассматриваете ли вы возможность возвращения в компанию, если нет, то почему?']),
+            recommend_company=sanitize_value(row['Комментарий к вопросу 4 Готовы ли вы рекомендовать компанию как работодателя, если нет, то почему?']),
+            comment_on_change=sanitize_value(row['Комментарий к ответу о причине увольнения "Желание сменить направление деятельности". Если сотрудник выбирает причину "Желание сменить направление деятельности, ему нужно прокомментировать эту причину.'])
         )
         hr_exit_surveys.append(hr_exit.__dict__)
 
