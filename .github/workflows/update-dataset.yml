@@ -1,0 +1,43 @@
+name: Update Dataset
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-dataset:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run update script
+        run: |
+          chmod +x scripts/update-dataset.sh
+          ./scripts/update-dataset.sh
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          git config --local user.email "github-actions@example.com"
+          git config --local user.name "GitHub Actions"
+          git diff --exit-code --quiet || echo "::set-output name=changed::true"
+
+      - name: Commit changes
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git add .
+          git commit -m "Update dataset on push"
+          git push
