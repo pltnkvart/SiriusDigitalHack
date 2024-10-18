@@ -19,22 +19,10 @@ def load_data(json_file):
     
     return questions, all_answers
 
-
-
-# Example question and answers
-#question = "What would you do during a picnic?"
-#answers = [
-#    "Eat burger", "Drink a beer", "Play football", "Play soccer",
-#    "Enjoy a root beer", "Swallow a steak", "Eat a salad", "Something else"
-#]
-
 question_all, answers_all = load_data("datasets/results.json")
 
 question = question_all
 answers = answers_all
-
-print(question)
-print(len(answers))
 
 # Load pre-trained BERT model and tokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
