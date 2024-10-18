@@ -1,7 +1,5 @@
 import json
 
-from utils import consts
-
 
 def exchange_words(path_to_file: str, column_name: str, word_being_changed: str, word_after_change: str, full_entry: bool = True) -> None:
 

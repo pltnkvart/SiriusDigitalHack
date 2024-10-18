@@ -2,7 +2,7 @@ from flask import Flask
 import atexit
 import os
 
-from server.api import upload, download
+from server.api import upload, download, greeting, change_value
 
 app = Flask(__name__)
 app.json.sort_keys = False
@@ -24,6 +24,8 @@ atexit.register(cleanup)
 
 app.register_blueprint(upload.bp)
 app.register_blueprint(download.bp)
+app.register_blueprint(greeting.bp)
+app.register_blueprint(change_value.bp)
 
 if __name__ == '__main__':
     app.run(debug=True)
