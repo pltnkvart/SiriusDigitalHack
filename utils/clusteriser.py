@@ -42,9 +42,6 @@ model = BertModel.from_pretrained('bert-base-uncased')
 
 # Tokenize and generate embeddings for the question
 question_tokens = tokenizer(question, return_tensors='pt', padding='max_length', max_length=128, truncation=True)
-
-print(question_tokens)
-
 with torch.no_grad():
     question_embedding = model(**question_tokens).last_hidden_state.mean(dim=1).numpy()
 
@@ -68,8 +65,30 @@ cluster_labels = sk_ap.fit_predict(X)
 
 #for i, answer in enumerate(answers):
 #    print(f"Answer: {answer} | Cluster: {cluster_labels[i]}")
-print(cluster_labels)
-print(max(cluster_labels))
+#print(cluster_labels)
+print(len(cluster_labels), max(cluster_labels))
+res = []
+
+# for i in range(max(cluster_labels)):
+#     res.append([i, []])
+
+import pickle
+
+with open('cluster_labes.pickle', 'wb') as handle:
+    pickle.dump(cluster_labels, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+with open('answers.pickle', 'wb') as handle:
+    pickle.dump(answers, handle, protocol=pickle.HIGHEST_PROTOCOL)
+   
+
+
+
+for cluster_idx in range(max(cluster_labels)):
+    appropriate_answers = [answers[answer_idx] for answer_idx, cluster_value in enumerate(cluster_labels) if cluster_value == cluster_idx]
+    res.append(appropriate_answers)
+    print(f"for cluster idx: {cluster_idx}, len is: {len(res[-1])}")
+print(res)
 
 df =pandas.DataFrame(X, columns = [f"dim_{x}" for x in range(X.shape[1])])
 pca= PCA(n_components=2).fit(df)
