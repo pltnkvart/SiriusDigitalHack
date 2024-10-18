@@ -5,8 +5,9 @@ def exchange_words(path_to_file: str, column_name: str, word_being_changed: str,
 
     """
     Use this method to change entry of this word to new in appropriate column
+    :param path_to_file: path to target file
     :param column_name: name of column where we will change words
-    :param word_being_changed: word that will be changed
+    :param word_being_changed:  that will be changed
     :param word_after_change: witch word will be written after change
     :param full_entry: if true use == else use contains
     """
@@ -35,7 +36,3 @@ def exchange_words(path_to_file: str, column_name: str, word_being_changed: str,
 
     with open(path_to_file, 'w', encoding='utf-8') as output_file:
         json.dump(data, output_file, ensure_ascii=False, indent=2)
-
-
-if __name__ == "__main__":
-    exchange_words("../datasets/results.json", "Комментарий к вопросу 2 Рассматриваете ли вы возможность остаться в компании/перевестись внутри отрасли? Были ли попытки руководителя сохранить вас в компании?", "да", "ага", full_entry=False)

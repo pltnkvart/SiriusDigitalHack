@@ -1,7 +1,7 @@
 from flask import Blueprint, session, jsonify, request
 
-from server.session_manager import get_file_for_session
 from utils.exchange import exchange_words
+from utils.session_manager import get_file_for_session
 
 bp = Blueprint('change_value', __name__)
 

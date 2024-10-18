@@ -1,11 +1,12 @@
 from flask import Blueprint, jsonify, session
 
-from server.session_manager import get_file_for_session
 from utils.clusters import make_clusterization
+from utils.session_manager import get_file_for_session
 
 bp = Blueprint('clusters', __name__)
 
-@bp.route('/clusters/<file_id>', methods=['GET'])
+
+@bp.route('/clusters', methods=['GET'])
 def download_file(file_id):
 
     try:

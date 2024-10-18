@@ -12,7 +12,6 @@ from nltk.corpus import stopwords
 from collections import Counter
 import pymorphy2
 import re
-import pickle
 
 nltk.download('punkt')
 nltk.download('stopwords')
