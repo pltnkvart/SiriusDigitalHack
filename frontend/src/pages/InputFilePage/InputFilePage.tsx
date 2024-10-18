@@ -4,6 +4,8 @@ import { Button, Text, Tabs, TabsItemProps, useToaster } from "@gravity-ui/uikit
 import styles from './styles.module.css';
 import * as XLSX from 'xlsx';
 import { useNavigate } from "react-router-dom";
+import { useUploadFileMutation } from "../../slices/api";
+import { BASE_URL } from "../../types/constants";
 
 interface ExcelData {
     [key: string]: string | number | boolean;
@@ -12,10 +14,12 @@ interface ExcelData {
 export const InputFilePage = () => {
     const { add } = useToaster();
     const navigate = useNavigate();
+    const [postFile] = useUploadFileMutation();
     const [excelFile, setExcelFile] = useState<ArrayBuffer | null>(null);
     const [excelSheetsData, setExcelSheetsData] = useState<Record<string, ExcelData[]> | null>(null);
     const [tabSheets, setTabSheets] = useState<TabsItemProps[]>([]);
     const [activeSheet, setActiveSheet] = useState<string>();
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const onSelectTab = useCallback((tabId: string) => {
         const findSheet = tabSheets.find((tab) => tab.id === tabId);
@@ -26,6 +30,7 @@ export const InputFilePage = () => {
         const fileTypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'];
         const selectedFile = e.target.files?.[0];
         if (selectedFile && fileTypes.includes(selectedFile.type)) {
+            setSelectedFile(selectedFile);
             const reader = new FileReader();
             reader.readAsArrayBuffer(selectedFile);
             reader.onload = (e) => {
@@ -59,9 +64,25 @@ export const InputFilePage = () => {
         }
     };
 
-    const handleAnalyzeButtonClick = () => {
-        const id = 1; // TODO
-        navigate(`/analyze/${id}`)
+    const handleAnalyzeButtonClick = async () => {
+        if (selectedFile) {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            await fetch('http://127.0.0.1:5000/files/upload', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    console.log(response.headers.get('set-cookie'));
+                    return response.headers.get('set-cookie');
+                }).then((sessionId) => {
+                    navigate(`/analyze/${sessionId}`);
+                })
+        };
     }
 
     return (

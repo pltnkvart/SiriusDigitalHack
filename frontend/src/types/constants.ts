@@ -1,19 +1,19 @@
-import {LayoutRows3} from '@gravity-ui/icons';
+import {File} from '@gravity-ui/icons';
 
 export const SERVICE_NAME = "Greenatom";
 
-const PORT = 3000;
-const HOST = "http://localhost"
+const PORT = 5000;
+const HOST = "http://127.0.0.1"
 const URL = `${HOST}:${PORT}`;
 
-export const BASE_URL = `${URL}/api/`;
+export const BASE_URL = `${URL}`;
 
 export const MENU_ITEMS = [
     {
         id: 'upload',
         title: 'Загрузка файла',
         path: '/',
-        icon: LayoutRows3,
+        icon: File,
     },
 ];
 

@@ -1,12 +1,14 @@
 from flask import Flask
 import atexit
 import os
+from flask_cors import CORS
 
 from api import files, health, change_value, clusters
 
 app = Flask(__name__)
 app.json.sort_keys = False
 app.secret_key = os.urandom(24)
+CORS(app, resources={'/*': {'origins': '*'}}, supports_credentials=True)
 
 temporary_files = {}
 
