@@ -2,7 +2,8 @@ import pandas as pd
 import json
 import sys
 
-class WorkerExitSurvey:
+
+class EmployeeExitSurvey:
     def __init__(self, reasons_leave, additional_reasons, stay_option, return_option, recommend_company):
         self.reasons_leave = reasons_leave
         self.additional_reasons = additional_reasons
@@ -19,22 +20,22 @@ class HRExitSurvey:
         self.comment_on_change = comment_on_change
 
 
-def convert_xlsx_to_json(input_xlsx_file: str, worker_json_file: str, hr_json_file: str):
+def convert_xlsx_to_json(input_xlsx_file: str, employee_json_file: str, hr_json_file: str):
     xls = pd.ExcelFile(input_xlsx_file)
 
     employee_responses = xls.parse("ответы сотрудников")
     hr_responses = xls.parse("ответы hr ")
 
-    worker_exit_surveys = []
+    employee_exit_surveys = []
     for _, row in employee_responses.iterrows():
-        worker_exit = WorkerExitSurvey(
+        employee_exit = EmployeeExitSurvey(
             reasons_leave=row['Комментарий к вопросу  1. Какие причины (факторы) сформировали ваше решение уйти из компании (выберите не более 3-х).'],
             additional_reasons=row['Комментарий к вопросу 1.1 Есть ли еще дополнительные причины, которые повлияли на ваше решение уйти из компании (выберите не более 3-х ).'],
             stay_option=row['Комментарий к вопросу 2 Рассматриваете ли вы возможность остаться в компании/перевестись внутри отрасли?'],
             return_option=row['Комментарий к вопросу 3 Рассматриваете ли вы возможность возвращения в компанию?'],
             recommend_company=row['Комментарий к вопросу 4 Готовы ли вы рекомендовать компанию как работодателя?']
         )
-        worker_exit_surveys.append(worker_exit.__dict__)
+        employee_exit_surveys.append(employee_exit.__dict__)
 
     hr_exit_surveys = []
     for _, row in hr_responses.iterrows():
@@ -46,8 +47,8 @@ def convert_xlsx_to_json(input_xlsx_file: str, worker_json_file: str, hr_json_fi
         )
         hr_exit_surveys.append(hr_exit.__dict__)
 
-    with open(worker_json_file, 'w', encoding='utf-8') as worker_file:
-        json.dump(worker_exit_surveys, worker_file, ensure_ascii=False, indent=2)
+    with open(employee_json_file, 'w', encoding='utf-8') as employee_file:
+        json.dump(employee_exit_surveys, employee_file, ensure_ascii=False, indent=2)
 
     with open(hr_json_file, 'w', encoding='utf-8') as hr_file:
         json.dump(hr_exit_surveys, hr_file, ensure_ascii=False, indent=2)
@@ -55,12 +56,12 @@ def convert_xlsx_to_json(input_xlsx_file: str, worker_json_file: str, hr_json_fi
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
-        print("Использование: python script.py <input_xlsx_file> <worker_json_file> <hr_json_file>")
+        print("Использование: python script.py <input_xlsx_file> <employee_json_file> <hr_json_file>")
         sys.exit(1)
 
-    input_xlsx_file = sys.argv[1]
-    worker_json_file = sys.argv[2]
-    hr_json_file = sys.argv[3]
+    input_file = sys.argv[1]
+    employee_target_file = sys.argv[2]
+    hr_target_file = sys.argv[3]
 
-    convert_xlsx_to_json(input_xlsx_file, worker_json_file, hr_json_file)
-    print(f"Данные успешно сохранены в {worker_json_file} и {hr_json_file}")
+    convert_xlsx_to_json(input_file, employee_target_file, hr_target_file)
+    print(f"Данные успешно сохранены в {employee_target_file} и {hr_target_file}")
