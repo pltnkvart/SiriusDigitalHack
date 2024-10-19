@@ -85,7 +85,7 @@ export const AnalyzePage = () => {
                 Следующий вопрос
             </Button>
             <div className={styles.flex}>
-                <ResponsiveContainer width="100%" className={styles.chart}>
+                <ResponsiveContainer width="100%" height="500px">
                     <PieChart width={400} height={400}>
                         <Pie
                             data={DATA}
