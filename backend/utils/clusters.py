@@ -22,10 +22,9 @@ def make_clusterization(input_json_path: str) -> List[List[Tuple[List[Tuple[str,
     def preprocess_text(text: str) -> List[str]:
         text = text.lower()
         text = re.sub(r'[^а-яё ]', ' ', text)
-        print(f"-----> {text} <------")
         words = nltk.word_tokenize(text, language='russian')
-
-        stop_words = set(stopwords.words('russian'))
+        stop_words = stopwords.words('russian')
+        stop_words.extend(['х', 'й', 'м', 'я', 'го', 'му', 'е'])
         filtered_tokens = [word for word in words if word not in stop_words]
         lemmatized_words = [morph.parse(word)[0].normal_form for word in filtered_tokens]
 
@@ -38,8 +37,7 @@ def make_clusterization(input_json_path: str) -> List[List[Tuple[List[Tuple[str,
             for cluster_idx, cluster_sentences in enumerate(answers_list):
                 all_bigrams = []
                 for sentence in cluster_sentences:
-                    print(f"sentence - {sentence}")
-                    words = preprocess_text(sentence)
+                    words = nltk.word_tokenize(sentence, language='russian')
                     all_bigrams.extend(list(bigrams(words)))
 
                 bigram_freq = Counter(all_bigrams)
@@ -51,9 +49,7 @@ def make_clusterization(input_json_path: str) -> List[List[Tuple[List[Tuple[str,
 
     def find_clusters(this_question: str, answers: List[str]) -> List[List[str]]:
         question_tokens = tokenizer(this_question, return_tensors='pt', padding='max_length', max_length=128, truncation=True)
-
         with torch.no_grad():
-            # todo: make lemma and remove stop words
             question_embedding = model(**question_tokens).last_hidden_state.mean(dim=1).numpy()
 
         answer_embeddings = []
@@ -62,7 +58,6 @@ def make_clusterization(input_json_path: str) -> List[List[Tuple[List[Tuple[str,
             answer_tokens = tokenizer(answer, return_tensors='pt', padding='max_length', max_length=128, truncation=True)
 
             with torch.no_grad():
-                # todo: make lemma and remove stop words
                 answer_embedding = model(**answer_tokens).last_hidden_state.mean(dim=1).numpy()
             joint_embedding = np.concatenate((question_embedding, answer_embedding), axis=1)
             answer_embeddings.append(joint_embedding)
@@ -90,8 +85,13 @@ def make_clusterization(input_json_path: str) -> List[List[Tuple[List[Tuple[str,
     morph = pymorphy2.MorphAnalyzer()
 
     output_clusters = []
-    for question in data:
-        question_clusters = find_clusters(question['question'], question['answers'])
+    for note in data:
+        question = note['question']
+        answers = note['answers']
+        question = ' '.join(preprocess_text(question))
+        for i in range(len(answers)):
+            answers[i] = ' '.join(preprocess_text(answers[i]))
+        question_clusters = find_clusters(question, answers)
         output_clusters.append(question_clusters)
         print(question_clusters)
 
