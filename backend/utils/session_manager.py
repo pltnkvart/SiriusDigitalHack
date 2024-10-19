@@ -30,11 +30,10 @@ def get_file_for_session(session_id: str) -> str:
 
 def cleanup():
     for session_id, files in temporary_files.items():
-        for file_path in files.values():
-            try:
-                os.remove(file_path)
-            except OSError as e:
-                print(f"Error removing temporary file: {file_path} - {e}")
+        try:
+            os.remove(files)
+        except OSError as e:
+            print(f"Error removing temporary file: {files} - {e}")
 
     temporary_files.clear()
 
