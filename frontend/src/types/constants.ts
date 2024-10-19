@@ -2,8 +2,8 @@ import {File} from '@gravity-ui/icons';
 
 export const SERVICE_NAME = "Greenatom";
 
-const PORT = 5000;
-const HOST = "http://127.0.0.1"
+const PORT = 5050;
+const HOST = "http://localhost"
 const URL = `${HOST}:${PORT}`;
 
 export const BASE_URL = `${URL}`;

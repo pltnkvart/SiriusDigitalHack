@@ -8,6 +8,7 @@ export const API = createApi({
     refetchOnFocus: true,
     refetchOnReconnect: true,
     refetchOnMountOrArgChange: true,
+    keepUnusedDataFor: 10000,
     endpoints: (builder) => ({
         uploadFile: builder.mutation<void, File>({
             query: (file) => {
@@ -17,6 +18,7 @@ export const API = createApi({
                 return {
                     url: "files/upload",
                     method: 'POST',
+                    credentials: 'include',
                     body: formData,                
                 };
             },
@@ -24,14 +26,45 @@ export const API = createApi({
                 if(meta?.response) localStorage.setItem('sessionId', meta.response.headers.get('set-cookie') || "");
             },
         }),
-        getClusters: builder.query<string[], string>({
-            query: (sessionCookie) => ({
+        getClusters: builder.query<string[], void>({
+            query: () => ({
                 url: "clusters",
-                headers: {
-                    'Cookie': sessionCookie
-                },
                 credentials: 'include',
                 method: 'GET',
+            }),
+        }),
+        getClusterById: builder.query<string[], number>({
+            query: (id) => ({
+                url: `clusters/${id}`,
+                credentials: 'include',
+                method: 'GET',
+            }),
+        }),
+        getText: builder.mutation<string, {question: string, mainPoints: string[]}>({
+            query: ({question, mainPoints}) => ({
+                url: `magic`,
+                credentials: 'include',
+                method: 'POST',
+                body: JSON.stringify({
+                    question: question,
+                    mainPoints: mainPoints,
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }),
+        }),
+        getWordFrequence: builder.mutation<string, {mainPoints: string[]}>({
+            query: ({mainPoints}) => ({
+                url: `magic_points`,
+                credentials: 'include',
+                method: 'POST',
+                body: JSON.stringify({
+                    mainPoints: mainPoints,
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                }
             }),
         }),
         healthCheck: builder.query<void, void>({
@@ -44,7 +77,10 @@ export const API = createApi({
 })
 
 export const {
+    useGetTextMutation,
     useHealthCheckQuery,
     useGetClustersQuery,
+    useGetWordFrequenceMutation,
+    useGetClusterByIdQuery,
     useUploadFileMutation
 } = API;

@@ -5,7 +5,6 @@ import styles from './styles.module.css';
 import * as XLSX from 'xlsx';
 import { useNavigate } from "react-router-dom";
 import { useUploadFileMutation } from "../../slices/api";
-import { BASE_URL } from "../../types/constants";
 
 interface ExcelData {
     [key: string]: string | number | boolean;
@@ -66,22 +65,8 @@ export const InputFilePage = () => {
 
     const handleAnalyzeButtonClick = async () => {
         if (selectedFile) {
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            await fetch('http://127.0.0.1:5000/files/upload', {
-                method: 'POST',
-                body: formData,
-                credentials: 'include',
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    console.log(response.headers.get('set-cookie'));
-                    return response.headers.get('set-cookie');
-                }).then((sessionId) => {
-                    navigate(`/analyze/${sessionId}`);
-                })
+            postFile(selectedFile).unwrap();
+            navigate('/analyze');
         };
     }
 

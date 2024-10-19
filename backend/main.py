@@ -16,4 +16,4 @@ app.register_blueprint(edit.bp)
 app.register_blueprint(clusters.bp)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='localhost', port=5050)

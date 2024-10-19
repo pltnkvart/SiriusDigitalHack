@@ -9,7 +9,7 @@ from utils.session_manager import get_file_for_session
 
 from utils.clusters import make_clusterization_for_group
 from utils.session_manager import add_file_by_session_and_group
-from utils.gpt_answer import analyze_word_frequency_gigachat
+from utils.gpt_answer import analyze_word_frequency_gigachat, get_word_frequency_gigachat
 
 bp = Blueprint('clusters', __name__)
 
@@ -69,7 +69,7 @@ def get_group_clusters(group_id):
         return jsonify({'error': str(e)}), 400
 
 @bp.route('/magic', methods=['POST'])
-def generate_clusters():
+def magic():
     try:
         # Extract data from the incoming POST request
         data = request.get_json()
@@ -89,3 +89,22 @@ def generate_clusters():
         return jsonify({'error': str(e)}), 400
     except Exception as e:
         return jsonify({'error': 'An unexpected error occurred: ' + str(e)}), 500
+
+@bp.route('/magic_points', methods=['POST'])
+def magic_points():
+    try:
+        # Extract data from the incoming POST request
+        data = request.get_json()
+        main_points = data.get('mainPoints')
+
+        # Call your analysis function
+        questions_clusters_array = get_word_frequency_gigachat(main_points)
+
+        # Return the successful response
+        return jsonify(questions_clusters_array), 200
+
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    except Exception as e:
+        return jsonify({'error': 'An unexpected error occurred: ' + str(e)}), 500
+
