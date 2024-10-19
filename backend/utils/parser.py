@@ -37,7 +37,11 @@ def sanitize_answers(answers: str):
 def convert_xlsx_to_json(input_xlsx_file: str, output_json_file: str):
     xls = pd.ExcelFile(input_xlsx_file)
 
-    all_questions = []
+    questions = []
+    groups = []
+
+    question_id = 1
+    group_id = 1
 
     for sheet_name in xls.sheet_names:
         df = pd.read_excel(xls, sheet_name=sheet_name, header=None)
@@ -47,21 +51,43 @@ def convert_xlsx_to_json(input_xlsx_file: str, output_json_file: str):
 
             answers = df[column].iloc[1:].dropna().apply(sanitize_answers).tolist()
             answers = [answer for answer in answers if answer]
+            if not answers:
+                continue
 
-            for question_exists in all_questions:
-                if is_similar(question, question_exists["question"], 0.85):
-                    question_exists["answers"].extend(answers)
-                    break
+            for group in groups:
+                for q_id in group["question_ids"]:
+                    if is_similar(question, questions[q_id - 1]["question"], 0.85):
+                        group["question_ids"].append(question_id)
+                        questions.append({
+                            "id": question_id,
+                            "question": question,
+                            "answers": answers
+                        })
+                        break
+                else:
+                    continue
+                break
             else:
-                if answers is not None:
-                    question_data = {
-                        "question": question,
-                        "answers": answers
-                    }
-                    all_questions.append(question_data)
+                groups.append({
+                    "id": group_id,
+                    "question_ids": [question_id],
+                })
+                group_id += 1
+
+            questions.append({
+                "id": question_id,
+                "question": question,
+                "answers": answers
+            })
+            question_id += 1
+
+    result = {
+        "questions": questions,
+        "groups": groups
+    }
 
     with open(output_json_file, 'w', encoding='utf-8') as result_file:
-        json.dump(all_questions, result_file, ensure_ascii=False, indent=2)
+        json.dump(result, result_file, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":
