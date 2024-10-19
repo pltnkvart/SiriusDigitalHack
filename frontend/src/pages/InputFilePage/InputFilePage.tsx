@@ -66,7 +66,7 @@ export const InputFilePage = () => {
     const handleAnalyzeButtonClick = async () => {
         if (selectedFile) {
             postFile(selectedFile).unwrap();
-            navigate('/analyze');
+            navigate('/analyze/1');
         };
     }
 

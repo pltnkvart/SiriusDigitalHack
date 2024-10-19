@@ -1,0 +1,16 @@
+.chart {
+    width: 100%;
+    height: fit-content;
+}
+
+.card {
+    width: 100%;
+    height: 400px;
+    padding: 10px;
+}
+
+.flex {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}

@@ -33,7 +33,7 @@ export const API = createApi({
                 method: 'GET',
             }),
         }),
-        getClusterById: builder.query<string[], number>({
+        getClusterById: builder.query<Array<[Array<[string, number]>, number]>, string>({
             query: (id) => ({
                 url: `clusters/${id}`,
                 credentials: 'include',

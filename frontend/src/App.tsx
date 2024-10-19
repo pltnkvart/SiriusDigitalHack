@@ -15,7 +15,7 @@ export const App = () => {
             errorElement={<ErrorPage />}
           />
           <Route
-            path="/analyze"
+            path="/analyze/:questionId"
             element={<AnalyzePage />}
             errorElement={<ErrorPage />}
           />
