@@ -168,8 +168,8 @@ def make_clusterization_for_group(questions) -> List[List[Tuple[List[Tuple[str, 
     answers = []
     question = questions[0]['question']
 
-    for question in questions:
-        for answer in question['answers']:
+    for question1 in questions:
+        for answer in question1['answers']:
             answers.append(answer)
 
     question = ' '.join(preprocess_text(question))

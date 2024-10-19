@@ -34,6 +34,7 @@ def get_file_for_session(session_id: str) -> str:
     else:
         raise ValueError("Invalid session ID")
 
+
 def get_file_for_session_and_group(session_id: str, group_idx: str) -> str:
     if session_id + '/' + group_idx in temporary_files:
         if temporary_files[session_id + '/' + group_idx] is not None:
