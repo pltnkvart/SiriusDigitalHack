@@ -3,7 +3,7 @@ import { useGetClusterByIdQuery, useGetTextMutation, useGetWordFrequenceMutation
 import { Button, Card, Skeleton } from "@gravity-ui/uikit";
 import Markdown from "react-markdown";
 import styles from './styles.module.css';
-import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { PageLayout } from "../../components/PageLayout/PageLayout";
 import { QUESTIONS } from "../../types/constants";
 import { useNavigate, useParams } from "react-router-dom";
@@ -51,7 +51,7 @@ export const AnalyzePage = () => {
                 console.log("Words:", filteredWords);
                 console.log("Frequencies:", filteredFrequencies);
 
-                setWords(filteredWords);
+                setWords(filteredWords.join(', ').split(', '));
                 setFrequencies(filteredFrequencies);
 
                 await getText({
@@ -70,6 +70,8 @@ export const AnalyzePage = () => {
         value: frequencies[index],
     }));
 
+    console.log(DATA);
+
     return (
         <PageLayout isLoading={isLoading}>
             Вопрос: {QUESTIONS[Number(questionId) - 1]}
@@ -85,8 +87,8 @@ export const AnalyzePage = () => {
                 Следующий вопрос
             </Button>
             <div className={styles.flex}>
-                <ResponsiveContainer width="100%" height="500px">
-                    <PieChart width={400} height={400}>
+                <ResponsiveContainer>
+                    <PieChart>
                         <Pie
                             data={DATA}
                             dataKey="value"
@@ -95,8 +97,13 @@ export const AnalyzePage = () => {
                             outerRadius={150}
                             fill={COLORS[Math.floor(Math.random() * COLORS.length)]}
                             label
-                        />
-                        <Tooltip />
+                        >{
+                                DATA.map((_, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))
+                            }
+                            <Tooltip />
+                        </Pie>
                         <Legend layout="vertical" align="right" verticalAlign="middle" />
                     </PieChart>
                 </ResponsiveContainer>
