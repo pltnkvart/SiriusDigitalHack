@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify, session, send_file
 import tempfile
+from flask_cors import cross_origin
 
 from utils.parser import convert_xlsx_to_json
 from utils.session_manager import create_session, add_file_to_session, get_file_for_session
@@ -8,6 +9,7 @@ bp = Blueprint('files', __name__)
 
 
 @bp.route('/files/upload', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def upload_file():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
