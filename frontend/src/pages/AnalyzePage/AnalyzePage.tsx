@@ -9,9 +9,8 @@ import { QUESTIONS } from "../../types/constants";
 import { useNavigate, useParams } from "react-router-dom";
 
 export const AnalyzePage = () => {
-    const { questionId } = useParams();
-    console.log(questionId)
     const navigate = useNavigate();
+    const { questionId } = useParams();
     const { data, isLoading } = useGetClusterByIdQuery(String(questionId));
     const [getText, { data: text, isLoading: isLoadingText }] = useGetTextMutation();
     const [words, setWords] = useState<(string | undefined)[]>([]);
@@ -63,6 +62,10 @@ export const AnalyzePage = () => {
         fetchText();
     }, [data]);
 
+    const goToNextQuestion = () => {
+        navigate('/analyze/' + (Number(questionId) + 1));
+    };
+
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
     const DATA = words.map((word, index) => ({
@@ -81,13 +84,14 @@ export const AnalyzePage = () => {
                 type="submit"
                 view="action"
                 size="m"
-                onClick={() => navigate(`/analyze/${Number(questionId) + 1}`)}
+                onClick={goToNextQuestion}
                 className={styles.analyze}
+                disabled={questionId === '6'}
             >
                 Следующий вопрос
             </Button>
             <div className={styles.flex}>
-                <ResponsiveContainer>
+                <ResponsiveContainer height={"400px"}>
                     <PieChart>
                         <Pie
                             data={DATA}
@@ -95,6 +99,7 @@ export const AnalyzePage = () => {
                             cx="50%"
                             cy="50%"
                             outerRadius={150}
+                            height={"400px"}
                             fill={COLORS[Math.floor(Math.random() * COLORS.length)]}
                             label
                         >{
